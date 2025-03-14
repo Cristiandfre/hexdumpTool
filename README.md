@@ -1,4 +1,7 @@
 # hexdumpTool
+
+--- THIS PROGRAM IS STILL IN PROGRESS ---
+
 Algoritmo:
 1. Lee de stdin hacia un buffer
 2. procesa el buffer:
