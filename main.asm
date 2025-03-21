@@ -44,16 +44,18 @@ _start:
 
     getHexValue:
         xor r11, r11                        ;Inicializamos r11
+        xor r12, r12                        ;Inicializamos r12
+        xor r13, r13
         mov r11b, [BufferIn + r8]           ;Movemos un caracter leido a r11b
         mov r12b, r11b                      ;Movemos el caracter a r12 para guardar el low nibble
         mov r13b, r11b                      ;Movemos el caracter a r13 para guardar el high nibble
-        ;and r12b, 00001111                  ;Nos quedamos con el low nibble
+        and r12, 00001111b                  ;Nos quedamos con el low nibble                NOTA: importante usar b al final del numero binario o sino nasm lo toma como un numero diferente del binario y da problema
         shr r13b, 4                         ;Nos quedamos con el high nibble
 
     alterLowNibble:
         xor rcx, rcx                        ;Limpiamos rcx
         mov cl, [hex_table + r12]           ;r12 tiene el valor del low nibble del caracter
-        mov byte [show_table + r10], 97     ;Movemos el valor traducido a la show_table para mostrar en stdout
+        mov byte [show_table + r10], cl     ;Movemos el valor traducido a la show_table para mostrar en stdout
         add r10, 3                          ;Avanzamos el index
 
     alterHighNibble:
@@ -80,16 +82,5 @@ _start:
         mov rax, 60             ;sys_call for sys_exit
         mov rdi, 0              ;return 0
         syscall                 
-
-
-
-
-;FALTA POR ARREGLAR EL LOW NIBBLE
-
-;INVESTIGAR
-;Por que no pude usar los registres r9 y r8 para la memoria efectiva
-;Por que estas instrucciones dan problema 
-;mov bl, [hex_table + al]        ;Movemos el nibble bajo traducido a bl
-;mov bh, [hex_table + ah] 
 
 
