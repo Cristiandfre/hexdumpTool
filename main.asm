@@ -32,31 +32,40 @@ _start:
         syscall
 
         ;Obtener bytes leidos
+        xor rcx, rcx             ;Utilizamos rcx para almacenar los caracteres que vamos a enviar a stdout
         mov r9, rax             ;Guardamos la cantidad de bytes leidos por sys_read
         cmp r9, 0               ;Verificamos si ya alcanzamos el eof
         je exit                 ;Si es asi, terminamos
 
     ;Alterar nibble alto en show_table
     mov r8, 1               ;Inicializamos un contador para contar bytes, en este caso r8
-    mov r10, 2              ;Inicializamos un index
+    mov r10, 2              ;Inicializamos un index para high nibble
+    mov r15, 2              ;Inicializamos un index para low nibble
 
-    alterHighNibble:
-        mov byte [show_table + r10], 97
-        add r10, 3                          ;Avanzamos el index
-        inc r8                              ;Aumentamos el contador de bytes procesados
-        cmp r8, r9                          ;Comparamos el contador de bytes (r8) con el numero de bytes por procesar (r9)
-        jl alterHighNibble                  ;Si r8 < r9 aun falta para procesar el buffer
-
-    ;Alterar nibble baja en show_table
-    mov r8, 1
-    mov r10, 1
+    getHexValue:
+        xor r11, r11                        ;Inicializamos r11
+        mov r11b, [BufferIn + r8]           ;Movemos un caracter leido a r11b
+        mov r12b, r11b                      ;Movemos el caracter a r12 para guardar el low nibble
+        mov r13b, r11b                      ;Movemos el caracter a r13 para guardar el high nibble
+        ;and r12b, 00001111                  ;Nos quedamos con el low nibble
+        shr r13b, 4                         ;Nos quedamos con el high nibble
 
     alterLowNibble:
-        mov byte [show_table + r10], 98
+        xor rcx, rcx                        ;Limpiamos rcx
+        mov cl, [hex_table + r12]           ;r12 tiene el valor del low nibble del caracter
+        mov byte [show_table + r10], 97     ;Movemos el valor traducido a la show_table para mostrar en stdout
         add r10, 3                          ;Avanzamos el index
-        inc r8                              ;Aumentamos el contador de bytes procesados
-        cmp r8, r9                          ;Comparamos el contador de bytes (r8) con el numero de bytes por procesar (r9)
-        jl alterLowNibble                   ;Si r8 < r9 aun falta para procesar el buffer
+
+    alterHighNibble:
+        xor rcx, rcx                        ;Limpiamos rcx
+        mov cl, [hex_table + r13]           ;r13 tiene el valor del high nibble del caracter
+        mov byte [show_table + r15 - 1], cl ;Tiene que aumentar de 3 en 3 y restar uno porque sumando 3 y restando 1 se llega a la posicion, si sumaramos 2 caemos en los espacios
+        add r15, 3                          ;Avanzamos el index
+    
+    ;Verificacion del loop
+    inc r8                              ;Aumentamos el contador de bytes procesados
+    cmp r8, r9                          ;Comparamos el contador de bytes (r8) con el numero de bytes por procesar (r9)
+    jl getHexValue                      ;Si r8 < r9 aun falta para procesar el buffer
 
     ;Mostrar stdin 
     showBuffer:
@@ -75,6 +84,7 @@ _start:
 
 
 
+;FALTA POR ARREGLAR EL LOW NIBBLE
 
 ;INVESTIGAR
 ;Por que no pude usar los registres r9 y r8 para la memoria efectiva
