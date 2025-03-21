@@ -2,7 +2,14 @@
 
 --- THIS PROGRAM IS STILL IN PROGRESS ---
 
-Algoritmo:
+##Manual
+Lee un archivo y retorna su hexdump.
+
+Ejemplo de uso:
+
+hexdump < hola.txt
+
+##Algoritmo
 1. Lee de stdin hacia un buffer
 2. procesa el buffer:
     1. Lee un byte
@@ -14,3 +21,4 @@ Algoritmo:
 3. Envia para stdout
 4. Repite hasta que stdin este procesado 
 5. Termina 
+
