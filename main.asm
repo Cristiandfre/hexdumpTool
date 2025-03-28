@@ -1,17 +1,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Build with: 
 ; nasm -f elf64 main.asm -o hexDump.o
-; ld hexDump.o -o hexDump
+; ld hexDump.o utils_lib.o -o hexDump
 ;
 ; This program is still in progress
 ;
 
-                                                        
-                                                        ;31 es la cantidad exacta de bytes de show_table (incluido salto de linea), 
-                                                        ;si colocamos mas que 31, en la proxima linea sera colocada informacion extra MAS la tabla show_table, mostrando mas informacion por linea 
-SIZE equ 31                                             ;si colocamos menos que 31, el salto de linea no sera incluido al enviar a stdout, entonces todo sera colocado en una sola linea
-                                                        ;Todo lo anterior aplica porque SIZE es usado tambien para definir la cantidad de bytes que enviamos a stdout
-                                                        ;Este Equate no puede colocarse para definir la cantidad de bytes que se van a leer, porque ya se usa para definir cuantos bytes van a ser enviados a stdout (31 bytes porque la tabla tiene 31 bytes incluyendo el salto de linea del final). En la tabla se usan dos bytes para representar en hexadecimal un solo byte, existen 10 representaciones o posiciones, asi que debemos leer 10 bytes, un byte para cada una de esas posiciones.
 SECTION .bss 
 
 BufferIn resb 32                                        ;Espacio en bytes usado para almacenar stdin
@@ -23,6 +17,7 @@ show_table db " 00 00 00 00 00 00 00 00 00 00",10
 
 
 SECTION .text 
+extern printnl
 
 global _start
 _start:
@@ -49,9 +44,11 @@ _start:
         xor r11, r11                        ;Inicializamos r11
         xor r12, r12                        ;Inicializamos r12
         xor r13, r13
+        
         mov r11b, [BufferIn + r8]           ;Movemos un caracter leido a r11b
         mov r12b, r11b                      ;Movemos el caracter a r12 para guardar el low nibble
         mov r13b, r11b                      ;Movemos el caracter a r13 para guardar el high nibble
+        
         and r12, 00001111b                  ;Nos quedamos con el low nibble                NOTA: importante usar b al final del numero binario o sino nasm lo toma como un numero diferente del binario y da problema
         shr r13b, 4                         ;Nos quedamos con el high nibble
 
@@ -74,11 +71,19 @@ _start:
     
     ;Mostrar stdin 
     showBuffer:
+        mov rax, r9             ;Movemos el numero de bytes, leidos por sys_read de stdin, a rax  
+        mov rcx, 3              ;Movemos 3 a rcx (cada byte leido y colocado en show_table equivale a 3 bytes de show_table)
+        mul rcx                 ;Multiplicamos rcx por rax, o sea, r9*3
+        mov r14, rax            ;Colocamos en r14 el resultado
+        inc r14                 ;Incrementamos en uno para contar el salto de linea de show_table (cuando llegue a la ultima linea, si esta es menor que 10 bytes, entonces este incremento no contara el salto de linea, pero contara un espacio, el espacio que pertenece a los siguientes 3 bytes que representan un byte hexadecimal, lo cual es util tambien mostrar ese espacio)
+        
         mov rax, 1              ;sys_call for sys_write
         mov rdi, 1              ;fd = stdout
         mov rsi, show_table     ;*show_table 
-        mov rdx, r9             ;Size of bytes for stdout           NOTA:Si alteramos SIZE, alteramos la cantidad de bytes que son enviados a stdout desde rsi, eso significa que si disminuimos SIZE, entonces el salto de linea no es incluido y por eso aparece todo en la misma linea
+        mov rdx, r14            ;Size of bytes for stdout           NOTA:Si alteramos SIZE, alteramos la cantidad de bytes que son enviados a stdout desde rsi, eso significa que si disminuimos SIZE, entonces el salto de linea no es incluido y por eso aparece todo en la misma linea
         syscall
+
+        call printnl            ;Imprimimos una linea nueva para bajar lo que venga a seguir
 
         cmp r9, 0
         jne loadBuffer
