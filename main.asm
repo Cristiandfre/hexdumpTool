@@ -77,7 +77,7 @@ _start:
         mov rax, 1              ;sys_call for sys_write
         mov rdi, 1              ;fd = stdout
         mov rsi, show_table     ;*show_table 
-        mov rdx, SIZE           ;Size of bytes for stdout           NOTA:Si alteramos SIZE, alteramos la cantidad de bytes que son enviados a stdout desde rsi, eso significa que si disminuimos SIZE, entonces el salto de linea no es incluido y por eso aparece todo en la misma linea
+        mov rdx, r9             ;Size of bytes for stdout           NOTA:Si alteramos SIZE, alteramos la cantidad de bytes que son enviados a stdout desde rsi, eso significa que si disminuimos SIZE, entonces el salto de linea no es incluido y por eso aparece todo en la misma linea
         syscall
 
         cmp r9, 0
