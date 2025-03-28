@@ -6,12 +6,15 @@
 ; This program is still in progress
 ;
 
-
-SIZE equ 32
-
+                                                        
+                                                        ;31 es la cantidad exacta de bytes de show_table (incluido salto de linea), 
+                                                        ;si colocamos mas que 31, en la proxima linea sera colocada informacion extra MAS la tabla show_table, mostrando mas informacion por linea 
+SIZE equ 31                                             ;si colocamos menos que 31, el salto de linea no sera incluido al enviar a stdout, entonces todo sera colocado en una sola linea
+                                                        ;Todo lo anterior aplica porque SIZE es usado tambien para definir la cantidad de bytes que enviamos a stdout
+                                                        ;Este Equate no puede colocarse para definir la cantidad de bytes que se van a leer, porque ya se usa para definir cuantos bytes van a ser enviados a stdout (31 bytes porque la tabla tiene 31 bytes incluyendo el salto de linea del final). En la tabla se usan dos bytes para representar en hexadecimal un solo byte, existen 10 representaciones o posiciones, asi que debemos leer 10 bytes, un byte para cada una de esas posiciones.
 SECTION .bss 
 
-BufferIn resb 32
+BufferIn resb 32                                        ;Espacio en bytes usado para almacenar stdin
 
 SECTION .data 
 
@@ -28,17 +31,17 @@ _start:
         mov rax, 0              ;sys_call for sys_read 
         mov rdi, 0              ;fd = stdin
         mov rsi, BufferIn       ;*Buffer
-        mov rdx, SIZE           ;Size of bytes for reading
+        mov rdx, 10             ;Size of bytes for reading
         syscall
 
         ;Obtener bytes leidos
-        xor rcx, rcx             ;Utilizamos rcx para almacenar los caracteres que vamos a enviar a stdout
+        xor rcx, rcx            ;Utilizamos rcx para almacenar los caracteres que vamos a enviar a stdout
         mov r9, rax             ;Guardamos la cantidad de bytes leidos por sys_read
         cmp r9, 0               ;Verificamos si ya alcanzamos el eof
-        je exit                 ;Si es asi, terminamos
+        je exit                 ;Si es asi, terminamos y vamos a exit
 
     ;Alterar nibble alto en show_table
-    mov r8, 1               ;Inicializamos un contador para contar bytes, en este caso r8
+    mov r8, 0               ;Inicializamos un contador para contar bytes, en este caso r8
     mov r10, 2              ;Inicializamos un index para high nibble
     mov r15, 2              ;Inicializamos un index para low nibble
 
@@ -68,14 +71,17 @@ _start:
     inc r8                              ;Aumentamos el contador de bytes procesados
     cmp r8, r9                          ;Comparamos el contador de bytes (r8) con el numero de bytes por procesar (r9)
     jl getHexValue                      ;Si r8 < r9 aun falta para procesar el buffer
-
+    
     ;Mostrar stdin 
     showBuffer:
         mov rax, 1              ;sys_call for sys_write
         mov rdi, 1              ;fd = stdout
         mov rsi, show_table     ;*show_table 
-        mov rdx, SIZE           ;Size of bytes for stdout
+        mov rdx, SIZE           ;Size of bytes for stdout           NOTA:Si alteramos SIZE, alteramos la cantidad de bytes que son enviados a stdout desde rsi, eso significa que si disminuimos SIZE, entonces el salto de linea no es incluido y por eso aparece todo en la misma linea
         syscall
+
+        cmp r9, 0
+        jne loadBuffer
 
     ;Exit
     exit:
