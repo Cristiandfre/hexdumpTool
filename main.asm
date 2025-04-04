@@ -8,25 +8,31 @@
 
 SECTION .bss 
 
-BufferIn resb 32                                        ;Espacio en bytes usado para almacenar stdin
+BufferIn resb 32                                ;Espacio en bytes usado para almacenar stdin
+                           
 
 SECTION .data 
 
+address_table db "00000000"
 hex_table db "0123456789ABCDEF"
-show_table db " 00 00 00 00 00 00 00 00 00 00",10
+show_table db " 00 00 00 00 00 00 00 00",10
+ascii_table db " ..........",10
 
 
 SECTION .text 
 extern printnl
+extern printab
 
 global _start
 _start:
+    push 0                      ;Para contar los bytes en el archivo y mostrarlo como direcciones
+
     ;Leer de stdin
     loadBuffer: 
         mov rax, 0              ;sys_call for sys_read 
         mov rdi, 0              ;fd = stdin
         mov rsi, BufferIn       ;*Buffer
-        mov rdx, 10             ;Size of bytes for reading                          Nota: son 10 bytes porque show_table tiene 10 posiciones "00" donde se colocara cada byte
+        mov rdx, 8              ;Size of bytes for reading                          Nota: son 10 bytes porque show_table tiene 10 posiciones "00" donde se colocara cada byte
         syscall
 
         ;Obtener bytes leidos
@@ -34,6 +40,37 @@ _start:
         mov r9, rax             ;Guardamos la cantidad de bytes leidos por sys_read
         cmp r9, 0               ;Verificamos si ya alcanzamos el eof
         je exit                 ;Si es asi, terminamos y vamos a exit
+
+    
+    ;Mostrar direcciones de bytes
+    showPositionByte:
+        mov rsi, 0                          ;Contador para definir iterar en la address table
+        pop rax                             ;Buscamos el contador de bytes para las direcciones
+        mov r10, rax                        ;Guardamos el valor del contador de bytes fuera de rax para no perderlo al tratarlo
+        mov rcx, 16                         ;Divisor
+        cmp rax, 7                          ;Vemos si rax todavia es menor que 8
+        jle showAddressTable                ;Si es menor que 8, no hay que procesar address table, simplemente mostramos
+        
+        loop:
+            xor rdx, rdx                        ;Limpiamos rdx
+            div rcx                             ;Dividimos por 16 
+            mov bl, [hex_table + rdx]           ;rdx contiene el residuo en decimal, cada residuo es una posicion hexadecimal
+            mov [address_table + rsi], bl       ;movemos el valor a la address table
+            inc rsi                             ;incrementamos rsi
+            cmp rdx, 15                         ;Vemos si llegamos al final de la division (15/16 o cualquier numero menor que 15 no sera entero)
+            jae loop 
+            ;hay que sumar 8 fuera del loop y hay que hacer tambien la comparacion de rax a ver si es menor que 8
+
+        showAddressTable:
+            mov rax, 1                  ;sys_call for sys_write
+            mov rdi, 1                  ;fd = stdin
+            mov rsi, address_table      ;*Buffer
+            mov rdx, 8                  ;Size of bytes for writing
+            syscall
+            call printab
+
+        add r10, 8            ;Adicionamos 8 para indicar que ya avanzamos 8 bytes en las direcciones de bytes
+        push r10              ;Y guardamos esa contagem en el stack
 
     ;Alterar nibble alto en show_table
     mov r8, 0               ;Inicializamos un contador para contar bytes, en este caso r8
