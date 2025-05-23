@@ -15,8 +15,8 @@ SECTION .data
 
 address_table db "00000000"
 hex_table db "0123456789ABCDEF"
-show_table db " 00 00 00 00 00 00 00 00",10
-ascii_table db " ..........",10
+show_table db " 00 00 00 00 00 00 00 00 "
+show_table_ascii db " 0  0  0  0  0  0  0  0  ",10
 
 
 SECTION .text 
@@ -94,11 +94,15 @@ _start:
         add r10, 3                          ;Avanzamos el index
 
     alterHighNibble:
-        xor rcx, rcx                        ;Limpiamos rcx
-        mov cl, [hex_table + r13]           ;r13 tiene el valor del high nibble del caracter
-        mov byte [show_table + r15 - 1], cl ;Tiene que aumentar de 3 en 3 y restar uno porque sumando 3 y restando 1 se llega a la posicion, si sumaramos 2 caemos en los espacios
-        add r15, 3                          ;Avanzamos el index
-    
+        xor rcx, rcx                            ;Limpiamos rcx
+        mov cl, [hex_table + r13]               ;r13 tiene el valor del high nibble del caracter
+        mov byte [show_table + r15 - 1], cl     ;Tiene que aumentar de 3 en 3 y restar uno porque sumando 3 y restando 1 se llega a la posicion, si sumaramos 2 caemos en los espacios
+        add r15, 3                              ;Avanzamos el index
+
+    setAsciiChar:
+        mov [show_table_ascii + r15 - 4], r11b  ;r15 es utilizado para poner los caracteres en la misma posicion que los high nibble, pero es modificado con -4 para ajustar su salida
+
+
     ;Verificacion del loop
     inc r8                              ;Aumentamos el contador de bytes procesados
     cmp r8, r9                          ;Comparamos el contador de bytes (r8) con el numero de bytes por procesar (r9)
@@ -117,6 +121,12 @@ _start:
         mov rsi, show_table     ;*show_table 
         mov rdx, r14            ;Size of bytes for stdout           NOTA:Si alteramos SIZE, alteramos la cantidad de bytes que son enviados a stdout desde rsi, eso significa que si disminuimos SIZE, entonces el salto de linea no es incluido y por eso aparece todo en la misma linea
         syscall
+
+        mov rax, 1                  ;sys_call for sys_write
+        mov rdi, 1                  ;fd = stdout
+        mov rsi, show_table_ascii   ;*ascii_table 
+        mov rdx, r14                ;Size of bytes for stdout        
+        syscall      
 
         call printnl            ;Imprimimos una linea nueva para bajar lo que venga a seguir
 
