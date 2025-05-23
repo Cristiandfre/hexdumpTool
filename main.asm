@@ -43,23 +43,21 @@ _start:
 
     
     ;Mostrar direcciones de bytes
-    showPositionByte:
-        mov rsi, 0                          ;Contador para definir iterar en la address table
-        pop rax                             ;Buscamos el contador de bytes para las direcciones
-        mov r10, rax                        ;Guardamos el valor del contador de bytes fuera de rax para no perderlo al tratarlo
-        mov rcx, 16                         ;Divisor
-        cmp rax, 7                          ;Vemos si rax todavia es menor que 8
-        jle showAddressTable                ;Si es menor que 8, no hay que procesar address table, simplemente mostramos
-        
-        loop:
-            xor rdx, rdx                        ;Limpiamos rdx
-            div rcx                             ;Dividimos por 16 
-            mov bl, [hex_table + rdx]           ;rdx contiene el residuo en decimal, cada residuo es una posicion hexadecimal
-            mov [address_table + rsi], bl       ;movemos el valor a la address table
-            inc rsi                             ;incrementamos rsi
-            cmp rdx, 15                         ;Vemos si llegamos al final de la division (15/16 o cualquier numero menor que 15 no sera entero)
-            jae loop 
-            ;hay que sumar 8 fuera del loop y hay que hacer tambien la comparacion de rax a ver si es menor que 8
+    pop rax                 ; Buscamos el contador de bytes para las direcciones
+    mov r10, rax            ; Guardamos el contador en r10 para evitar perderlo al tratar rax
+    mov rsi, 7              ; Posición donde colocar el dígito más bajo
+    mov rcx, 16
+
+    .hex_loop:
+        xor rdx, rdx
+        div rcx             ; Divide rax / 16 => rax=quotient, rdx=remainder
+        mov bl, [hex_table + rdx] ; convierte dígito a carácter
+        mov [address_table + rsi], bl
+        dec rsi             ; mover a la izquierda en el buffer
+        cmp rax, 0
+        jne .hex_loop
+
+
 
         showAddressTable:
             mov rax, 1                  ;sys_call for sys_write
