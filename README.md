@@ -1,13 +1,19 @@
-# hexdumpTool
+# HexDump Tool
 
---- THIS PROGRAM IS STILL IN PROGRESS ---
+## Descripción
 
-## Manual
-Lee un archivo y retorna su hexdump.
+HexDump Tool es un programa escrito en **Assembly x86-64** que permite visualizar el contenido de un archivo en formato hexadecimal y ASCII, mostrando las direcciones de memoria correspondientes. Se ejecuta redirigiendo la entrada estándar mediante `< archivo.txt`.
 
-Ejemplo de uso:
+## Características
 
-hexdump < hola.txt
+- Muestra las direcciones de memoria en formato hexadecimal (`00, 08, 10, 18, etc.`).
+- Traduce los bytes del archivo a su representación hexadecimal.
+- Presenta la versión ASCII de los bytes leídos.
+- Implementación eficiente utilizando **syscalls** de Linux.
+
+## Captura de pantalla (Ejemplo de salida)
+
+
 
 ## Algoritmo
 1. Lee de stdin hacia un buffer

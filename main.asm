@@ -3,7 +3,7 @@
 ; nasm -f elf64 main.asm -o hexDump.o
 ; ld hexDump.o utils_lib.o -o hexDump
 ;
-; This program is still in progress
+;
 ;
 
 SECTION .bss 
@@ -32,7 +32,7 @@ _start:
         mov rax, 0              ;sys_call for sys_read 
         mov rdi, 0              ;fd = stdin
         mov rsi, BufferIn       ;*Buffer
-        mov rdx, 8              ;Size of bytes for reading                          Nota: son 10 bytes porque show_table tiene 10 posiciones "00" donde se colocara cada byte
+        mov rdx, 8              ;Size of bytes for reading                          
         syscall
 
         ;Obtener bytes leidos

@@ -1,1 +1,0 @@
-vamos a ver como el programa interactua con este archivo que acabo de crear
