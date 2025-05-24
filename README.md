@@ -1,30 +1,32 @@
 # HexDump Tool
 
-## Descripción
+## Description
 
-HexDump Tool es un programa escrito en **Assembly x86-64** que permite visualizar el contenido de un archivo en formato hexadecimal y ASCII, mostrando las direcciones de memoria correspondientes. Se ejecuta redirigiendo la entrada estándar mediante `< archivo.txt`.
+HexDump Tool is a program written in **Assembly x86-64** that allows you to visualize the contents of a file in hexadecimal format along with its ASCII representation.
 
-## Características
+## Features
 
-- Muestra las direcciones de memoria en formato hexadecimal (`00, 08, 10, 18, etc.`).
-- Traduce los bytes del archivo a su representación hexadecimal.
-- Presenta la versión ASCII de los bytes leídos.
-- Implementación eficiente utilizando **syscalls** de Linux.
+- Displays memory addresses in hexadecimal format (`00, 08, 10, 18, etc.`).
+- Converts file bytes into their hexadecimal representation.
+- Shows the ASCII equivalent of the bytes read.
+- Efficient implementation using **Linux syscalls**.
 
-## Captura de pantalla (Ejemplo de salida)
+## Screenshot (Example Output)
+![Example](/home/slave/Pictures/hexdumptool.png)
 
 
+## Algorithm
 
-## Algoritmo
-1. Lee de stdin hacia un buffer
-2. procesa el buffer:
-    1. Lee un byte
-    2. Traduce el nibble inferior en un valor hex
-    3. Traduce el nibble superior en un valor hex
-    4. Junta ambos nibbles en dos valores hex
-    5. El resultado hex lo envia para una table hex
-    6. Repite hasta que el buffer este procesado
-3. Envia para stdout
-4. Repite hasta que stdin este procesado 
-5. Termina 
+1. Reads from `stdin` into a buffer.
+2. Processes the buffer:
+   1. Reads one byte.
+   2. Converts the lower nibble into a hexadecimal value.
+   3. Converts the upper nibble into a hexadecimal value.
+   4. Combines both nibbles into two hex values.
+   5. Stores the hex result in a hex table.
+   6. Repeats until the buffer is fully processed.
+3. Sends output to `stdout`.
+4. Repeats until `stdin` is completely processed.
+5. Terminates.
+
 
