@@ -12,7 +12,7 @@ HexDump Tool is a program written in **Assembly x86-64** that allows you to visu
 - Efficient implementation using **Linux syscalls**.
 
 ## Screenshot (Example Output)
-![Example](/home/slave/Pictures/hexdumptool.png)
+![Example](./screenshots/hexdumptool.png)
 
 
 ## Algorithm
