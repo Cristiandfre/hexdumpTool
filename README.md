@@ -1,32 +1,39 @@
-# HexDump Tool
+# 🛠️ HexDump Tool  
 
-## Description
+## 📜 Description  
+**HexDump Tool** is a lightweight program written in **x86-64 Assembly** that allows users to visualize the contents of a file in **hexadecimal format** along with its **ASCII representation**.  
 
-HexDump Tool is a program written in **Assembly x86-64** that allows you to visualize the contents of a file in hexadecimal format along with its ASCII representation.
+## 🚀 Features  
+- 🏷 **Displays memory addresses** in hexadecimal (`00, 08, 10, 18, etc.`).  
+- 🔢 **Converts file bytes** into their hexadecimal representation.  
+- 🔡 **Shows the ASCII equivalent** of each byte read.  
+- ⚡ **Optimized for efficiency** using **Linux syscalls** for direct system interaction.  
 
-## Features
+## 🖼️ Screenshot (Example Output)  
+![Example](./screenshots/hexdumptool.png)  
 
-- Displays memory addresses in hexadecimal format (`00, 08, 10, 18, etc.`).
-- Converts file bytes into their hexadecimal representation.
-- Shows the ASCII equivalent of the bytes read.
-- Efficient implementation using **Linux syscalls**.
+## 🔍 How It Works  
+The tool processes input from `stdin`, converts it to hexadecimal and ASCII formats, and outputs it to `stdout`.  
 
-## Screenshot (Example Output)
-![Example](./screenshots/hexdumptool.png)
+### 📌 Algorithm  
+1️⃣ **Read** data from `stdin` into a buffer.  
+2️⃣ **Process the buffer** byte by byte:  
+   - Extract **lower** and **upper nibbles**.  
+   - Convert them into **hex values**.  
+   - Store results in a hex table.  
+3️⃣ **Send processed output** to `stdout`.  
+4️⃣ **Repeat** until all data from `stdin` is processed.  
+5️⃣ **Terminate** execution after reaching the end of input.  
 
+## 🔗 Dependencies  
+- **Linux OS** (due to syscall usage)  
+- **Assembler (NASM)** for compilation  
 
-## Algorithm
+## 🏗️ Compilation & Execution  
+Compile using NASM:  
+```bash
+nasm -f elf64 hexdumptool.asm -o hexdumptool.o
+ld hexdumptool.o -o hexdumptool
 
-1. Reads from `stdin` into a buffer.
-2. Processes the buffer:
-   1. Reads one byte.
-   2. Converts the lower nibble into a hexadecimal value.
-   3. Converts the upper nibble into a hexadecimal value.
-   4. Combines both nibbles into two hex values.
-   5. Stores the hex result in a hex table.
-   6. Repeats until the buffer is fully processed.
-3. Sends output to `stdout`.
-4. Repeats until `stdin` is completely processed.
-5. Terminates.
 
 
