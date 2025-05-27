@@ -20,7 +20,8 @@ The tool processes input from `stdin`, converts it to hexadecimal and ASCII form
 2️⃣ **Process the buffer** byte by byte:  
    - Extract **lower** and **upper nibbles**.  
    - Convert them into **hex values**.  
-   - Store results in a hex table.  
+   - Store results in a hex table.
+     
 3️⃣ **Send processed output** to `stdout`.  
 4️⃣ **Repeat** until all data from `stdin` is processed.  
 5️⃣ **Terminate** execution after reaching the end of input.  
