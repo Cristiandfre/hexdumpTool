@@ -32,8 +32,8 @@ The tool processes input from `stdin`, converts it to hexadecimal and ASCII form
 ## 🏗️ Compilation & Execution  
 Compile using NASM:  
 ```bash
-nasm -f elf64 hexdumptool.asm -o hexdumptool.o
-ld hexdumptool.o -o hexdumptool
+nasm -f elf64 main.asm -o hexDump.o
+ld hexDump.o utils_lib.o -o hexDump
 
 
 
