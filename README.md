@@ -16,15 +16,15 @@
 The tool processes input from `stdin`, converts it to hexadecimal and ASCII formats, and outputs it to `stdout`.  
 
 ### Algorithm  
-1 **Read** data from `stdin` into a buffer.  
-2 **Process the buffer** byte by byte:  
+1. **Read** data from `stdin` into a buffer.  
+2. **Process the buffer** byte by byte:  
    - Extract **lower** and **upper nibbles**.  
    - Convert them into **hex values**.  
    - Store results in a hex table.
      
-3 **Send processed output** to `stdout`.  
-4 **Repeat** until all data from `stdin` is processed.  
-5 **Terminate** execution after reaching the end of input.  
+3. **Send processed output** to `stdout`.  
+4. **Repeat** until all data from `stdin` is processed.  
+5. **Terminate** execution after reaching the end of input.  
 
 ## Dependencies  
 - **Linux OS** (due to syscall usage)  
